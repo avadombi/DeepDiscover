@@ -20,3 +20,5 @@ data/
 *.whl
 *.tar.gz
 *.zip
+
+.idea/
