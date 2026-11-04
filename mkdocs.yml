@@ -1,0 +1,18 @@
+site_name: DeepDiscover
+site_description: Conservative differentiable hydrological models
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Getting started: getting_started.md
+  - Scientific formulation: scientific_formulation.md
+  - Data and units: data.md
+  - Model configuration: model_configuration.md
+  - Model topologies: topologies.md
+  - Physical boundaries: boundaries.md
+  - Routing: routing.md
+  - Observations: observations.md
+  - Calibration and evaluation: training_and_evaluation.md
+  - Custom components: customization.md
+  - Limitations: limitations.md
+  - Structural comparison: structural_comparison.md
+  - CAMELS-US: camels.md

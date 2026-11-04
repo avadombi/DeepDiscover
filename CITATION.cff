@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "Please cite the Multiple-DU methodological manuscript when using DeepDiscover."
+title: "DeepDiscover"
+version: 1.0.0
+type: software
+license: BSD-3-Clause
+repository-code: "https://github.com/avadombi/DeepDiscover"
+authors:
+  - family-names: Adombi
+    given-names: Adoubi Vincent De Paul
+preferred-citation:
+  type: unpublished
+  title: "Can discharge identify internal hydrological processes? Neural equifinality in the Multiple-DU extension of DeepDiscover"
+  authors:
+    - family-names: Adombi
+      given-names: Adoubi Vincent De Paul
+  year: 2026
+  status: submitted
+  notes: "Manuscript submitted."
+references:
+  - type: article
+    title: "DeepDiscover: towards autonomous discovery of bucket-type conceptual models – a proof of concept applied to hydrology"
+    authors:
+      - family-names: Adombi
+        given-names: Adoubi Vincent De Paul
+    journal: Journal of Hydrology
+    year: 2026
+    volume: "671"
+    doi: 10.1016/j.jhydrol.2026.135249
