@@ -8,9 +8,8 @@ Two learned routing modes are provided and kept separate:
 
 ``DynamicRoutingMultiDUModel``
     Learns a conservative kernel that can change at every time step as a
-    function of local hydrological context. Water routed at time ``t`` keeps
-    the kernel assigned to it at that time, so delayed water and tracer mass can
-    later use exactly the same lag fractions.
+    function of local hydrological context. Each released water parcel retains
+    the routing kernel assigned to it at its release time.
 
 Neither class introduces the eDD previous-discharge recurrence. The routing
 state is explicit water in transit.

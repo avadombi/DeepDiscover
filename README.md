@@ -74,7 +74,7 @@ Water losses belong to the physical balance. Training losses measure the agreeme
 
 ## Model topologies
 
-Each release process has one destination, and several processes may lead to the same destination. The library supports both a direct outlet pathway plus an internal DU transfer, and a cascade with two downstream outlet processes. See [model topologies](https://github.com/avadombi/DeepDiscover/blob/main/docs/topologies.md) for explicit configurations and [structural comparison](https://github.com/avadombi/DeepDiscover/blob/main/docs/structural_comparison.md) for validation-based comparisons.
+DeepDiscover supports a configurable number of DiscoverUnits and release processes. Internal transfers can form serial cascades, parallel branches, or other acyclic networks, and several processes may share a downstream destination or contribute to the outlet. Each process has exactly one declared destination. The [model topologies](https://github.com/avadombi/DeepDiscover/blob/main/docs/topologies.md) page includes two-DU configurations, a four-DU cascade, and a branched four-DU network. See [structural comparison](https://github.com/avadombi/DeepDiscover/blob/main/docs/structural_comparison.md) for validation-based comparisons of alternative models.
 
 ## Examples
 

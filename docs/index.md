@@ -4,4 +4,3 @@ DeepDiscover is a Python library for hydrological model discovery with one or mo
 
 Start with [installation](installation.md) and [getting started](getting_started.md). The [scientific formulation](scientific_formulation.md) gives the governing equations, while [custom components](customization.md) explains extensions.
 
-The library models water quantities. Trace transport and isotope simulations require separate components.

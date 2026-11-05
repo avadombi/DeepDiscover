@@ -13,5 +13,4 @@ DeepDiscover models **water quantities**, with observations linked to simulated 
 - Training custom constitutive networks may reproduce predictions without satisfying CRC signs. The user must test monotonicity separately.
 - Checkpoints store parameter arrays but not automatically executable Python definitions of customized components.
 - The package does not predict precipitation or meteorological forcings by itself. Such forecasts require an upstream forecasting model.
-- Isotope, tracer and water-age transport are not included in the quantity model.
 - GPU, multi-worker and platform-specific runtime performance should be verified for each environment.
