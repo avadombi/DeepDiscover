@@ -1,6 +1,6 @@
 # DeepDiscover
 
-DeepDiscover is a Python library for differentiable hydrological modeling with explicit water conservation. A model contains one or more DiscoverUnits (DUs), each with a water store and constitutive relationships that determine water releases. Each release process has one declared destination. Temporal routing is specified separately.
+DeepDiscover is an open-source Python library for hydrological model discovery. It learns constitutive relationships for water release processes within a differentiable, mass-conserving framework. Models comprise one or more DiscoverUnits (DUs), each with a water storage and candidate processes. Each process has one declared destination, with temporal routing configured separately.
 
 The same hydrological system can be calibrated against streamflow, groundwater levels, soil moisture and other measured variables using observation operators. Multiple observation types can be used together.
 
@@ -8,19 +8,17 @@ The same hydrological system can be calibrated against streamflow, groundwater l
 
 Python 3.11 or 3.12 is recommended. DeepDiscover uses TensorFlow and Keras.
 
-Install from this repository:
+Install the published package from [PyPI](https://pypi.org/project/deepdiscover-hydro/):
 
 ```bash
-python -m pip install .
+python -m pip install deepdiscover-hydro
 ```
 
-Install the optional dependencies for the notebooks and documentation:
+To run the notebooks or build the documentation from a source checkout:
 
 ```bash
-python -m pip install ".[examples,docs]"
+python -m pip install -e ".[examples,docs]"
 ```
-
-Once published on [PyPI](https://pypi.org/), install the distribution with `python -m pip install deepdiscover-hydro`.
 
 ## Example
 
@@ -76,7 +74,7 @@ Water losses belong to the physical balance. Training losses measure the agreeme
 
 ## Model topologies
 
-Each release process has one destination, and several processes may lead to the same destination. The library supports both a direct outlet pathway plus an internal DU transfer, and a cascade with two downstream outlet processes. See [model topologies](docs/topologies.md) for explicit configurations and [structural comparison](docs/structural_comparison.md) for validation-based comparisons.
+Each release process has one destination, and several processes may lead to the same destination. The library supports both a direct outlet pathway plus an internal DU transfer, and a cascade with two downstream outlet processes. See [model topologies](https://github.com/avadombi/DeepDiscover/blob/main/docs/topologies.md) for explicit configurations and [structural comparison](https://github.com/avadombi/DeepDiscover/blob/main/docs/structural_comparison.md) for validation-based comparisons.
 
 ## Examples
 
@@ -93,16 +91,16 @@ To run the three self-contained notebooks:
 python run_examples.py
 ```
 
-To run the CAMELS-US example, obtain the original forcing and streamflow files and follow [the data instructions](docs/camels.md). Three execution modes are provided:
+To run the CAMELS-US example, obtain the original forcing and streamflow files and follow [the data instructions](https://github.com/avadombi/DeepDiscover/blob/main/docs/camels.md). Three execution modes are provided:
 
 ```bash
-# Short check of loading, simulation, calibration and evaluation
+# Short run: loading, simulation, calibration and evaluation
 python run_examples.py --only 04_camels_us
 
-# Measure the cost of full-length training windows (three epochs)
+# Timing on full-length training windows (three epochs)
 python run_examples.py --only 04_camels_us --camels-mode benchmark
 
-# Full chronological calibration with the original training-window settings
+# Full calibration with the complete training windows
 python run_examples.py --only 04_camels_us --camels-mode full
 ```
 
@@ -120,7 +118,7 @@ This command requires the CAMELS-US files and the `checkpoint/` and `history.jso
 
 ## Documentation
 
-The `docs/` directory covers the [scientific equations](docs/scientific_formulation.md), [model configuration](docs/model_configuration.md), [topologies](docs/topologies.md), [data](docs/data.md), [routing](docs/routing.md), [observation operators](docs/observations.md), [custom components](docs/customization.md), [calibration](docs/training_and_evaluation.md) and [model comparison](docs/structural_comparison.md).
+The `docs/` directory covers the [scientific equations](https://github.com/avadombi/DeepDiscover/blob/main/docs/scientific_formulation.md), [model configuration](https://github.com/avadombi/DeepDiscover/blob/main/docs/model_configuration.md), [topologies](https://github.com/avadombi/DeepDiscover/blob/main/docs/topologies.md), [data](https://github.com/avadombi/DeepDiscover/blob/main/docs/data.md), [routing](https://github.com/avadombi/DeepDiscover/blob/main/docs/routing.md), [observation operators](https://github.com/avadombi/DeepDiscover/blob/main/docs/observations.md), [custom components](https://github.com/avadombi/DeepDiscover/blob/main/docs/customization.md), [calibration](https://github.com/avadombi/DeepDiscover/blob/main/docs/training_and_evaluation.md) and [model comparison](https://github.com/avadombi/DeepDiscover/blob/main/docs/structural_comparison.md).
 
 To build the documentation locally:
 
@@ -143,17 +141,17 @@ The tests cover conservation, routing, gradients, observation operators, trainin
 
 Report bugs and request features through [GitHub Issues](https://github.com/avadombi/DeepDiscover/issues). Include the Python, TensorFlow and Keras versions, the model configuration, a minimal example and the complete error message. Avoid sharing private datasets or credentials.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+See [CONTRIBUTING.md](https://github.com/avadombi/DeepDiscover/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 ## Scientific references and license
 
-DeepDiscover is intended for water-quantity modeling. Its latent states and processes require scientific interpretation in the context of the available observations. See [limitations](docs/limitations.md).
+DeepDiscover is intended for water-quantity modeling. Its latent states and processes require scientific interpretation in the context of the available observations. See [limitations](https://github.com/avadombi/DeepDiscover/blob/main/docs/limitations.md).
 
-The methodological article is identified in [CITATION.cff](CITATION.cff). Source code is distributed under the [BSD 3-Clause License](LICENSE). CAMELS-US data must be obtained separately from their original provider.
+The methodological article is identified in [CITATION.cff](https://github.com/avadombi/DeepDiscover/blob/main/CITATION.cff). Source code is distributed under the [BSD 3-Clause License](https://github.com/avadombi/DeepDiscover/blob/main/LICENSE). CAMELS-US data must be obtained separately from their original provider.
 
 ## Citation
 
-The current Multiple-DU methodology is described in:
+The Multiple-DU methodology is described in:
 
 Adombi, A. V. D. P. (2026). *Can discharge identify internal hydrological processes? Neural equifinality in the Multiple-DU extension of DeepDiscover*. Manuscript submitted to *Journal of Hydrology*.
 
@@ -161,4 +159,3 @@ The original DeepDiscover formulation is published in:
 
 Adombi, A. V. D. P. (2026). *DeepDiscover: towards autonomous discovery of bucket-type conceptual models – a proof of concept applied to hydrology*. *Journal of Hydrology*, 671, 135249. https://doi.org/10.1016/j.jhydrol.2026.135249
 
-The submitted manuscript currently has no publication DOI. Citation information will be updated when it is published.

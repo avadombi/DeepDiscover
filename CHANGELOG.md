@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1
+
+- Corrected LaTeX equation rendering in the scientific documentation.
+- Updated the installation instructions and links in the PyPI description.
+- Updated the documentation site configuration for MathJax.
+- Revised the scientific documentation and application instructions.
+- No changes to the hydrological model equations or numerical algorithms.
+
 ## 1.0.0
 
 First public release of DeepDiscover for water-quantity modeling.

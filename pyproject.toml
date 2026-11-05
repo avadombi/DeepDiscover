@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deepdiscover-hydro"
-version = "1.0.0"
-description = "Conservative differentiable hydrological modeling with DiscoverUnits"
+version = "1.0.1"
+description = "Conservative hydrological model discovery with differentiable DiscoverUnits"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 license = "BSD-3-Clause"
@@ -24,7 +24,7 @@ Issues = "https://github.com/avadombi/DeepDiscover/issues"
 
 [project.optional-dependencies]
 examples = ["pandas>=2.0", "matplotlib>=3.7", "nbformat>=5.9", "nbclient>=0.9", "ipykernel>=6.0", "jupyterlab>=4.0"]
-docs = ["mkdocs>=1.6"]
+docs = ["mkdocs>=1.6", "pymdown-extensions>=10.0"]
 test = ["pytest>=8.0", "build>=1.0", "pandas>=2.0"]
 
 [tool.setuptools.packages.find]

@@ -17,7 +17,7 @@ from .data import load_camels, load_camels_dataset, hamon_pet
 from .structural import Candidate, compare_structures, equivalent_candidates, save_comparison
 from .metrics import masked_mse, masked_mae, masked_rmse, masked_huber, masked_nse, hydro_metrics
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __all__ = [
     "DeepDiscover", "CRCNet", "PositiveDense", "InformationalMemoryCell",

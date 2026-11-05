@@ -2,76 +2,79 @@
 
 ## Storage, sources and losses
 
-For each DU `i`, let `S_i` be the water storage at the end of the preceding time step, and let `I_i` denote conserved water entering the DU. The pre-loss quantity is
+For each DiscoverUnit $i$, let $S_i(t-1)$ denote the storage at the end of the previous time step and $I_i(t)$ the incoming water. The water available before boundary losses is
 
-\[
+$$
 A_i(t)=S_i(t-1)+I_i(t).
-\]
+$$
 
-Prescribed and user-defined sources add water to `I_i`. The `sources` reported by DeepDiscover are additional boundary sources supplied inside a DU. Water entering through the main `water` tensor appears separately.
+Prescribed and user-defined sources add water to $I_i(t)$. The `sources` reported by DeepDiscover are additional boundary sources supplied inside a DU. Water entering through the main `water` tensor appears separately.
 
-A physical sink requests a non-negative loss `L_request`. A PET-limited sink uses a non-negative demand `D` and an efficiency `eta` between zero and one:
+A physical sink requests a non-negative loss. A demand-limited sink uses a non-negative demand $D(t)$ and an efficiency $\eta(t)$ between zero and one:
 
-\[
-L_{\rm request}(t)=\eta(t)\min(D(t),A_i(t)).
-\]
+$$
+L_{\mathrm{request}}(t)=\eta(t)\min(D(t),A_i(t)).
+$$
 
-When the sum of requested losses exceeds available water, all requests are multiplied by the common factor `min(1, A_i / sum(requests))`. After realized losses,
+If the combined requested losses exceed the available water, each request is scaled by the same factor, $\min\left(1, A_i / \sum_k L_{ik,\mathrm{request}}\right)$. After the realized losses,
 
-\[
+$$
 B_i(t)=A_i(t)-\sum_{k}L_{ik}(t).
-\]
+$$
 
 ## CRC processes and conservative allocation
 
-Each process `j` has a non-negative propensity `h_ij` from a neural constitutive relationship. For the standard `CRCNet`, each context variable has an orientation `gamma` in `{+1, 0, -1}`. Network weights are constrained to be non-negative and monotone activations maintain the direct orientation. Positive physical inputs are transformed as `x/(x + x_ref)` before applying signs.
+Each process $j$ has a non-negative propensity $h_{ij}(t)$ determined by a learned constitutive relationship. In `CRCNet`, each context variable has a CRC orientation $\gamma\in\{-1,0,+1\}$. Non-negative network weights and monotone activations enforce the specified direct orientation. Non-negative input variables are scaled using $x/(x+x_{\mathrm{ref}})$.
 
-\[
+$$
 u_{ij}(t)=B_i(t)\frac{h_{ij}(t)}{1+\sum_kh_{ik}(t)},
 \qquad
-S_{i,raw}(t)=\frac{B_i(t)}{1+\sum_kh_{ik}(t)}.
-\]
+S_{i,\mathrm{raw}}(t)=\frac{B_i(t)}{1+\sum_kh_{ik}(t)}.
+$$
 
-If capacity `Smax` is finite, retained storage is limited and excess water becomes explicit overflow:
+For a finite capacity $S_{\max,i}$, excess retained water becomes overflow:
 
-\[
-S_i(t)=\min(S_{i,raw}(t),S_{max,i}),\qquad
-O_i(t)=\max(S_{i,raw}(t)-S_{max,i},0).
-\]
+$$
+S_i(t)=\min(S_{i,\mathrm{raw}}(t),S_{\max,i}),\qquad
+O_i(t)=\max(S_{i,\mathrm{raw}}(t)-S_{\max,i},0).
+$$
 
 Consequently,
 
-\[
+$$
 A_i(t)=S_i(t)+\sum_j u_{ij}(t)+O_i(t)+\sum_k L_{ik}(t).
-\]
+$$
 
 Every process has exactly **one destination**. Destinations refer to another DU or the outlet. The DU list is topologically ordered; all internal routes must point to a DU with a larger index.
 
 ## Temporal routing
 
-For route `e`, discharge or transfer released at time `s` is distributed among lags `0...L` by non-negative fractions `g_e,s(tau)` whose sum is one. A routed amount retains the fractions determined at its release time. Water not yet arrived is kept in an explicit transit state. See [routing](routing.md).
+For a route $e$, water released at time $s$ is distributed across lags $\tau=0,\ldots,L_e$ using a routing kernel $g_{e,s}(\tau)$ such that
+
+$$
+ g_{e,s}(\tau)\geq 0,\qquad
+ \sum_{\tau=0}^{L_e} g_{e,s}(\tau)=1.
+$$
+
+Each released quantity retains the routing weights calculated at its release time. Water awaiting arrival remains in the transit state. See [Temporal routing](routing.md).
 
 ## Overall balance
 
-With total DU storage `S_total`, route transit `R_total`, and optional snow storage `S_snow`,
+The complete balance accounts for water stored in the DUs, water in transit and, when enabled, snow storage:
 
-\[
-\Delta(S_{total}+R_{total}+S_{snow})
- = I_{external}+I_{sources}-Q_{outlet}-L_{boundaries}+\epsilon.
-\]
+$$
+\Delta(S_{\mathrm{total}}+R_{\mathrm{total}}+S_{\mathrm{snow}})
+ = I_{\mathrm{external}}+I_{\mathrm{sources}}-Q_{\mathrm{outlet}}-L_{\mathrm{boundaries}}+\epsilon.
+$$
 
 Numerical conservation and hydrological plausibility are separate evaluations. Persistent storage accumulation may remain physically implausible even when the arithmetic balance closes.
 
 ## Informational memory
 
-An optional state `m` can be learned independently of water storage:
+The optional informational memory $m(t)$ evolves independently of water storage:
 
-\[
+$$
 m(t)=[1-\lambda(t)]m(t-1)+\lambda(t)z(t).
-\]
+$$
 
-`m` carries information; it does not contain or move water. Temporal routing uses conservative route kernels; previous discharge is not a recurrent routing state.
-
-## Source material
-
-The equations follow the author's Multiple-DU methods v3 and quantitative Multiple-DU-QQ formalism v3, including capacity, overflow, snow, observation operators, and routing alternatives. The older multi-destination routing search does not define the topology for this version.
+The memory state carries information and does not transport water. All water transferred between DiscoverUnits is accounted for through the conservative routing kernels.

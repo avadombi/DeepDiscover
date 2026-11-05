@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "Please cite the Multiple-DU methodological manuscript when using DeepDiscover."
 title: "DeepDiscover"
-version: 1.0.0
+version: "1.0.1"
 type: software
 license: BSD-3-Clause
 repository-code: "https://github.com/avadombi/DeepDiscover"
@@ -16,7 +16,7 @@ preferred-citation:
       given-names: Adoubi Vincent De Paul
   year: 2026
   status: submitted
-  notes: "Manuscript submitted."
+  notes: "Manuscript submitted to Journal of Hydrology."
 references:
   - type: article
     title: "DeepDiscover: towards autonomous discovery of bucket-type conceptual models – a proof of concept applied to hydrology"

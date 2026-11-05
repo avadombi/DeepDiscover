@@ -1,5 +1,6 @@
 site_name: DeepDiscover
-site_description: Conservative differentiable hydrological models
+site_description: Hydrological model discovery with conserved water quantities
+repo_url: https://github.com/avadombi/DeepDiscover
 nav:
   - Home: index.md
   - Installation: installation.md
@@ -16,3 +17,11 @@ nav:
   - Limitations: limitations.md
   - Structural comparison: structural_comparison.md
   - CAMELS-US: camels.md
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

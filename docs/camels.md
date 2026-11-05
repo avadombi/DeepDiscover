@@ -26,7 +26,7 @@ The data reader computes mean temperature, Hamon potential evapotranspiration an
 
 A value of `-999` or quality flag `M` in the CAMELS streamflow file indicates a missing observation. These values are excluded from calibration through the observation mask. Other negative discharge values cause an error. Missing precipitation or meteorological drivers must be handled explicitly before simulation.
 
-The published case-study chronology uses 365 warm-up days from 1980-10-01, training from 1981-10-01 to 2000-09-30, validation from 2000-10-01 to 2005-09-30 and testing from 2005-10-01 to 2010-09-30. The notebook selects these dates explicitly.
+The CAMELS-US case study uses 365 warm-up days from 1980-10-01, training from 1981-10-01 to 2000-09-30, validation from 2000-10-01 to 2005-09-30 and testing from 2005-10-01 to 2010-09-30. The notebook selects these dates explicitly.
 
 Review the original CAMELS-US data documentation and quality flags before using alternative basins or periods. Cite the original data sources in scientific publications.
 
