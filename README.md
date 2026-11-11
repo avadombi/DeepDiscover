@@ -153,7 +153,7 @@ The methodological article is identified in [CITATION.cff](https://github.com/av
 
 The Multiple-DU methodology is described in:
 
-Adombi, A. V. D. P. (2026). *Can discharge identify internal hydrological processes? Neural equifinality in the Multiple-DU extension of DeepDiscover*. Manuscript submitted to *Journal of Hydrology*.
+Adombi, A. V. D. P. (2026). *Can discharge identify internal hydrological processes? Neural equifinality in the Multiple-DU extension of DeepDiscover*. Manuscript submitted.
 
 The original DeepDiscover formulation is published in:
 
