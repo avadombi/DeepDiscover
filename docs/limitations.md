@@ -1,16 +1,15 @@
-# Limitations
+# Model limitations
 
-DeepDiscover models **water quantities**, with observations linked to simulated conserved storages and fluxes.
+DeepDiscover provides a configurable computational framework. Its outputs require the same scientific scrutiny as those of any conceptual hydrological model.
 
-- A prescribed topology can fit observed data without being uniquely identifiable. Physical labels for latent storages or internal fluxes require supporting information.
-- The DU graph is acyclic and uses one destination per process. Cycles, distributed spatial grids and non-hydrological conservation laws require additional models.
-- The standard `CRCNet` requires non-negative physical context inputs. Signed predictors need a meaningful transformation and a documented orientation.
-- The model works in quantities per regular time step. Rate data and observations at irregular times require explicit conversion or temporal aggregation.
-- Default training-window states are zero. Warm-up and suitable initial conditions matter for reservoirs and long-memory pathways.
-- Observation masks handle missing targets. Missing physical forcing data must be handled before simulation.
-- Dynamic routing weights depend on release-time conditions, with finite lag support fixed at construction.
-- For physical sinks with several competing demands, requests are reduced proportionally. Users should confirm that this allocation represents their intended physical process.
-- Training custom constitutive networks may reproduce predictions without satisfying CRC signs. The user must test monotonicity separately.
-- Checkpoints store parameter arrays but not automatically executable Python definitions of customized components.
-- The package does not predict precipitation or meteorological forcings by itself. Such forecasts require an upstream forecasting model.
-- GPU, multi-worker and platform-specific runtime performance should be verified for each environment.
+The main points to consider are:
+
+- Candidate processes, explanatory variables, observation operators, and destinations are selected by the modeller. These choices define the representations explored by calibration.
+- Physical conservation restricts admissible water exchanges, but does not establish that each learned process corresponds uniquely to a real hydrological mechanism.
+- Current DU connections are represented through directed acyclic networks. Cyclic exchanges and distributed spatial grids are outside this interface.
+- The properties imposed by the standard CRCNet architecture are not automatically guaranteed when a custom neural component is substituted.
+- A model may reproduce the observed discharge well while representing internal storages and fluxes differently from other acceptable models.
+- Numerical conservation diagnostics verify bookkeeping consistency. They do not replace evaluation against independent hydrological evidence.
+- Execution time depends on the number of DUs, neural processes, sequence length, routing configuration, and computational platform.
+
+A useful model assessment therefore combines predictive performance, physical diagnostics, and a transparent account of the candidate structures and observations used for calibration.

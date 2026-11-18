@@ -1,34 +1,51 @@
 # Installation
 
-DeepDiscover requires Python, TensorFlow and Keras. Python 3.11 or 3.12 is recommended.
+DeepDiscover is distributed as `deepdiscover-hydro` through the Python Package Index. The examples below use Windows commands, but the same `pip` package is available on other supported operating systems.
 
-Create a virtual environment and install DeepDiscover from PyPI.
+## Python environment
 
-Windows:
+Python **3.11 or 3.12** is recommended. A separate environment keeps TensorFlow and its dependencies independent from other projects.
 
-```powershell
-py -3.12 -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
+Using Conda:
+
+```console
+conda create -n dd-check python=3.12
+conda activate dd-check
 python -m pip install deepdiscover-hydro
 ```
 
-Linux and macOS:
+Using an existing virtual environment:
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
+```console
 python -m pip install deepdiscover-hydro
 ```
 
-To run the notebooks, build the documentation, or execute the tests, clone the repository and install the optional dependencies from its root directory:
+## Confirm the installation
 
-```bash
-python -m pip install -e ".[examples,docs,test]"
-python -m pytest -q
+```python
+import deepdiscover
+import tensorflow as tf
+
+print('TensorFlow:', tf.__version__)
+print('DeepDiscover:', getattr(deepdiscover, '__version__', 'installed'))
 ```
 
-TensorFlow support depends on the Python version and operating system. Consult the [TensorFlow installation guide](https://www.tensorflow.org/install/pip) if installation fails.
+For precise package metadata, run:
 
-The PyPI distribution is named `deepdiscover-hydro`, while the Python import is `deepdiscover`.
+```console
+python -m pip show deepdiscover-hydro
+```
+
+## Optional scientific tools
+
+The core package installs the dependencies declared in its package metadata. Application notebooks may require additional packages, including `pandas`, `matplotlib`, and `jupyter`. Install the notebook extras with:
+
+```console
+python -m pip install "deepdiscover-hydro[examples]"
+```
+
+## Source code and notebooks
+
+The public repository includes four example notebooks and a collection of automated tests. To work directly from the source repository, follow its [installation instructions](https://github.com/avadombi/DeepDiscover#installation). The published version and a development checkout should not be confused when reproducing a numerical experiment.
+
+The **documentation preview** uses its own `.venv` folder. Removing the extracted documentation folder deletes this local environment. It does not uninstall DeepDiscover from an unrelated Conda environment.

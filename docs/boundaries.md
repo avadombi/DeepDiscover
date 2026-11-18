@@ -1,48 +1,25 @@
-# Physical water sources and losses
+# Physical sources, sinks and storage limits
 
-DeepDiscover distinguishes **boundary exchanges** from **training loss functions**. A boundary exchange changes the physical water balance and must be accounted for in the simulated system.
+A DeepDiscover model may receive water through the main **water** input or through additional source components assigned to individual DiscoverUnits. Physical sources and sinks appear in the water balance; explanatory drivers do not.
 
 ## Sources
 
-`water` supplies the external conserved inputs directly to DUs. Additional sources can be specified in a DU's `exchanges` list:
+A source may be prescribed from a time series or implemented through a user-defined component. Examples include lateral inflow and managed recharge. Its units and timing must match those used for the rest of the model.
 
-- `PrescribedSource(driver_index, scale=1)` adds a non-negative amount from a driver column.
-- `FunctionalSource(my_layer)` adds a non-negative amount computed by a differentiable Keras layer.
-- A custom `keras.layers.Layer` declaring `kind = "source"` can implement the same `call(drivers)` contract.
+When a physical input enters DU $i$, it contributes to that DU's incoming water $\mathrm{I}_i^{(t)}$ before the local release and retention calculations.
 
-Applications include precipitation, prescribed recharge, irrigation, lateral inflow and water transferred into the modeled domain. A physical source cannot be silently included in both `water` and `exchanges`, as that would count the same water twice.
+## Sinks
 
-## Losses
+A sink removes water from the modelled system. An atmospheric demand-limited sink, for example, cannot remove more water than is physically available. The realized flux is reported separately from the model's discharge-generating processes.
 
-- `PrescribedSink(driver_index, scale=1)` requests an externally specified amount, such as pumping or managed extraction.
-- `DemandLimitedSink(efficiency_net, demand_index, context_indices)` requests a loss bounded by demand and an efficiency between zero and one.
-- `FunctionalSink(my_layer)` uses a custom layer returning a non-negative requested amount.
-- A custom `keras.layers.Layer` with `kind = "sink"` implements `call(drivers, storage, available)`.
+When multiple sinks operate on the same available resource, the requested losses are reduced if their total exceeds available water. Their realized amounts are included in the conservation accounting.
 
-Loss requests from the same DU are combined. If demand exceeds water availability, each request is reduced by the same fraction. Simultaneous evaporation and groundwater pumping are therefore admissible and conserve water.
+## Fixed capacity and overflow
 
-## Example
+A storage limit can be provided with the corresponding constructor parameter, for example `smax=100.0`, or set as a learnable value constrained by prescribed bounds, for example `smax_bounds=(50.0, 200.0)`.
 
-```python
-from deepdiscover import (
-    CRCNet, DiscoverUnit, PrescribedSource, PrescribedSink,
-    DemandLimitedSink,
-)
+For a bounded DU, its overflow destination must be specified in `overflow_destinations`. Overflow can be routed through its own temporal kernel. When overflow enters a downstream DU, the receiving unit needs the corresponding incoming context channel.
 
-et_efficiency = CRCNet(gamma=[1, 1], x_ref=[10, 100], output="sigmoid")
-du = DiscoverUnit(
-    process_nets=[CRCNet([1, 1], [10, 100])],
-    context_indices=[(0,)],
-    exchanges=[
-        PrescribedSource(driver_index=2),            # lateral inflow
-        DemandLimitedSink(et_efficiency, demand_index=1, context_indices=[0]),
-        PrescribedSink(driver_index=3),              # pumping
-    ],
-)
-```
+## Diagnostics
 
-Here the driver columns represent precipitation information, PET, lateral inflow and pumping request. The user must decide which entries are conserved in `water`, and which are introduced as boundary sources. This choice determines the physical system boundary.
-
-## Requirements for custom exchanges
-
-Sources and sinks return one non-negative `(B,1)` tensor in quantity-per-step units. Non-finite or negative values raise errors. Custom sinks return **requested losses**; the DU applies the available-water constraint. These exchanges may carry trainable Keras parameters. If they introduce water from a separate physical reservoir outside the graph, that reservoir is not included in the system storage balance.
+Inspect individual source and sink fluxes together with the storage change and process releases. The numerical water-balance residual checks the consistency of the simulated quantities. A small residual confirms numerical conservation, not necessarily the physical validity of the selected process representation.

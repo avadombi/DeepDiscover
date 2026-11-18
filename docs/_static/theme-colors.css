@@ -1,0 +1,29 @@
+/* DeepDiscover palette: change a value here to recolor the whole website. */
+:root {
+  --dd-sidebar: #343131;
+  --dd-sidebar-header: #343131;
+  --dd-sidebar-text: #e8e6e6;
+  --dd-sidebar-active: #ffffff;
+  --dd-sidebar-active-text: #343131;
+  --dd-nav-section: #6ea8db;
+  --dd-page: #ffffff;
+  --dd-outside: #fcfcfc;
+  --dd-text: #404040;
+  --dd-heading: #433b38;
+  --dd-subtitle: #606068;
+  --dd-link: #2979bb;
+  --dd-accent: #6558a5;
+  --dd-code-background: #f7f7f8;
+  --dd-border: #e6e6e8;
+}
+
+/* Scientific figures: change these values to adjust the website display size.
+   The SVG artwork itself is not modified. */
+:root {
+  --dd-fig1-width: 700px;
+  --dd-fig2-width: 700px;
+  --dd-fig3-width: 660px;
+  --dd-fig4-width: 820px;
+  --dd-fig5-width: 750px;
+  --dd-figure-max-height: 460px;
+}
