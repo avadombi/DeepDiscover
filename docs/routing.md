@@ -1,27 +1,48 @@
 # Temporal routing
 
-Each process releases water from one DU and has exactly one declared destination. The route controls the time of arrival at this destination. All routes transport conserved water.
+A process describes how much water leaves a DiscoverUnit. Its destination specifies where the water goes. Temporal routing describes when it arrives. These are independent choices in DeepDiscover.
 
-| Route type | Class or configuration | Description |
-| --- | --- | --- |
-| Instantaneous | `routing=None` | Entire release arrives in the same step |
-| Fixed | `RoutingKernel([0.2,0.5,0.3])` | Prescribed fractions over delays 0,1,2 |
-| Learned, time-invariant | `TrainableRoutingMultiDUModel` | One trainable softmax distribution per route |
-| Dynamic | `DynamicRoutingMultiDUModel` | A separate state-dependent distribution at each release time |
+```{figure} _static/figures/Fig5.svg
+:alt: Instantaneous and delayed routes, with observed quantities linked through observation operators.
+:width: 95%
+:align: center
+:class: dd-science-figure
 
-The `routing` argument is a nested list with the same structure as `destinations`. The optional `overflow_routing` list configures overflow propagation. No new physical water is generated during routing.
-
-```python
-from deepdiscover import RoutingKernel, TrainableRoutingMultiDUModel
-model = TrainableRoutingMultiDUModel(
-    discover_units=[du0, du1],
-    destinations=[[1], ["outlet"]],
-    routing=[[RoutingKernel([0.4, 0.6])], [RoutingKernel([0.2, 0.3, 0.5])]],
-)
+**Figure 5.** Routing and observation operators. Water released by a process can arrive immediately or after a distributed delay; simulated quantities are subsequently related to measurements through selected operators.
 ```
 
-For dynamic routing, use `DynamicRoutingMultiDUModel` with the same core configuration. Its default inputs are beginning-of-step storage, incoming water and the current process release. Optional informational memory is also available. Dynamic kernel fractions are evaluated when water is released; they remain attached to each released amount during propagation.
+## Instantaneous transfer
 
-Delayed water is explicitly represented by `transit` and `final_transit_state`. The complete balance includes this transit quantity. A route with only one lag is always instantaneous, including in the dynamic class.
+In instantaneous routing, a released amount is delivered to its destination within the same model time step. This is suitable for model structures in which no explicit delay is required along that connection.
 
-The DU graph is presently a directed acyclic graph. Index DUs in topological order. A route from DU 2 to DU 0 is rejected. Temporal kernels are measured in **integer model steps**; they do not imply a physical time unit by themselves.
+## Prescribed temporal routing
+
+A routing kernel allocates each release across a finite set of possible arrival delays. Its weights are non-negative and sum to one:
+
+```{math}
+:label: routing-1
+
+ \mathrm{g}_e(\tau)\ge0,\qquad \sum_{\tau=0}^{\mathrm{L}_e}\mathrm{g}_e(\tau)=1.
+```
+
+For a time-invariant kernel, the arrival quantity is
+
+```{math}
+:label: routing-2
+
+ \mathrm{F}_e^{(t)}=\sum_{\tau=0}^{\mathrm{L}_e}\mathrm{g}_e(\tau)\mathrm{x}_e^{(t-\tau)}.
+```
+
+Released water that has not yet arrived remains in the routing state. The remaining quantity is part of the total system storage for numerical conservation.
+
+## Learned routing
+
+The package supports routing kernels whose parameters can be estimated during calibration. It also provides state-dependent kernels, where the weight distribution is evaluated from the conditions at the time a quantity of water enters the route.
+
+The interpretation of a learned delay depends on the selected model time step and the routing architecture.
+
+## Continuing a simulation
+
+If a long record is simulated in consecutive segments, the second segment must receive the ending storage and routing states from the first. Starting the second segment with empty transit states can change its outlet response when a delayed route is present.
+
+See [Scientific formulation](scientific_formulation.md) for the conservation equations and [Model configuration](model_configuration.md) for destination declarations.

@@ -1,26 +1,61 @@
-# Data and units
+# Data preparation
 
-The model receives non-negative **water quantities per time step** and exogenous **informational predictors**.
+DeepDiscover uses explicit arrays for physical water inputs, neural explanatory variables, and observations. The **HydroDataset** interface stores these quantities and constructs temporal windows for training and evaluation.
 
-| Variable | Shape | Meaning |
-| --- | --- | --- |
-| `water` | `(B,T,n_DU)` | External conserved water entering each DU per time step |
-| `drivers` | `(B,T,n_drivers)` | Predictors used in networks and boundary exchanges |
-| `storage` | `(B,T,n_DU)` | Water remaining in each DU after the step |
-| `process_fluxes` | `(B,T,n_processes)` | Quantities released by learned constitutive processes |
-| `route_arrivals` | `(B,T,n_routes)` | Water arriving at the destination after routing |
-| `transit` | `(B,T,n_routes)` | Water still travelling on each route |
-| `memory` | `(B,T,n_DU)` | Optional informational state, not a water quantity |
-| `observations[name]` | `(B,T,n_y)` | Measured variable used in fitting |
+## Shapes and conventions
 
-`B` is the number of independent windows in a batch; `T` is time within each window. No loop over batch elements is required by the core. Time-varying units must be converted to amounts for the model step. For example, a discharge rate can be converted to an equivalent depth per time step using catchment area.
+A batch of $\mathrm{B}$ windows, each containing $\mathrm{T}$ time steps, uses
 
-`HydroDataset` accepts a continuous `(T, channels)` record, masks missing observations and checks regular datetime sampling if dates are supplied. `make_windows(warmup=..., score_length=..., stride=...)` returns `HydroBatch`. Warm-up time is simulated with zero observation masks.
+```text
+water        (B, T, number_of_DUs)
+drivers      (B, T, number_of_drivers)
+observations (B, T, number_of_targets)
+```
 
-Use `first_score` and `last_score` to restrict training windows to the desired training period. Validation and test periods should be separated chronologically and must not influence model selection before their intended use. Predictors and water inputs cannot contain missing values; imputation is an explicit user decision.
+Physical inputs and explanatory drivers need separate dimensions. Both arrays must have the same number of time steps and use the same temporal ordering.
 
-CRC inputs must be **non-negative**. For signed temperatures, provide a physically meaningful non-negative transform as a separate driver, or use temperature only in the snow module. Do not apply an arbitrary offset without documenting its interpretation.
+## Continuous data
 
-## Long sequences and state continuation
+Before windowing, a single catchment record can be stored in two-dimensional arrays, one row per time step. For example:
 
-To split a continuous run into parts, pass the first segment's `final_storage`, `final_memory` and `final_transit_state` into the second segment. With snow, also pass `snow_final_snow_storage`. Training windows start from the user-provided state or zero by default; a sufficiently long warm-up is necessary to limit state-initialization effects.
+```python
+import numpy as np
+from deepdiscover import HydroDataset
+
+water = precipitation.astype('float32')[:, None]
+drivers = np.column_stack([precipitation, pet]).astype('float32')
+observations = {'streamflow': measured_discharge}
+
+data = HydroDataset(water, drivers, observations)
+```
+
+This example assumes that `precipitation`, `pet`, and `measured_discharge` have already been prepared with consistent units and aligned dates.
+
+## Warm-up and scored periods
+
+Water storage depends on preceding inputs, so an initial period is usually needed to evolve the internal states. Training windows may include a **warm-up** prefix, followed by a **scored** part contributing to the optimization objective.
+
+```text
+|--------- warm-up ---------|------- scored observations -------|
+                           ^ loss starts here
+```
+
+An illustrative call is
+
+```python
+train = data.make_windows(
+    warmup=30,
+    score_length=60,
+    stride=30,
+)
+```
+
+Choose the warm-up duration and window length according to the hydrological memory, available record, and modeling objective. A batch represents several independent temporal windows from the supplied record.
+
+## Data partitions
+
+Training, validation, and independent evaluation intervals should be defined chronologically. Data preprocessing parameters estimated from observations should use the training interval. The validation period supports model selection, while the independent evaluation period is reserved for assessing the selected procedure.
+
+## Missing values
+
+Missing observations can be handled through observation masks. The package does not automatically reconstruct missing physical forcing records. Check and prepare the inputs before simulation.

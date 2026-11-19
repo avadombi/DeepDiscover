@@ -1,22 +1,25 @@
-# Comparing structural hypotheses
+# Structural comparison
 
-Both three-process two-DU configurations in [model topologies](topologies.md) can be supplied as candidates. The package provides an explicit workflow to compare alternative structures under identical training and validation data. Each candidate is a Python function that creates a new DeepDiscover model. This makes the number of DUs, processes and routes visible in each experiment.
+A useful model-development question is whether different assumptions about water storage, release processes, and network connections produce meaningfully different hydrological responses. DeepDiscover provides utilities for comparing user-defined candidate structures under a common evaluation procedure.
 
-```python
-from deepdiscover import Candidate, compare_structures, equivalent_candidates
+## Define candidates
 
-candidates = [
-    Candidate('one_state', build_one_state, {'multiple_states': False}),
-    Candidate('two_states', build_two_states, {'multiple_states': True}),
-]
-results = compare_structures(
-    candidates, train, validation, seeds=(42, 200, 22), epochs=150,
-)
-selected = equivalent_candidates(results, reference='two_states', loss_tolerance=0.001)
-```
+Each candidate is a model constructor that returns an independent, freshly initialized model. Candidates may differ in the number of DUs, the process connections, or selected process representations.
 
-`build_one_state` and `build_two_states` are user-defined functions returning fresh `DeepDiscover` instances. The example names indicate declared structural properties, with their absence and presence explicitly represented.
+For a meaningful comparison, use consistent input data, observation operators, calibration periods, and training budgets unless these are the deliberate subject of the experiment.
 
-Validation equivalence depends on the model envelope, objective, tolerance, training budget and optimization quality. Identifying a property as supported requires testing adequately fitted alternatives in which the property is absent. Numerical mass conservation is checked separately; long-term storage behaviour also needs hydrological examination. One selected topology is not evidence of a unique physical architecture.
+## Compare on validation data
 
-The function does not access a test period. An independent test should be used only after the final candidate families and comparison rules are fixed. The package currently supplies direct candidate comparison; it does not silently search and delete graph components.
+Train each candidate using the training observations and compare its performance on a separate validation period. Repeating the procedure with different initializations helps distinguish systematic differences from optimization variability.
+
+The package includes public utilities named `Candidate`, `compare_structures`, and `equivalent_candidates` for setting up and examining declared comparisons. Consult their installed signatures when configuring a particular experiment, because data and model-constructor arguments depend on the package version.
+
+## Examine physical consistency
+
+A small predictive difference is rarely sufficient to interpret a structure. Also examine conservation residuals, storage behavior, physical boundary exchanges, and the complexity of the candidate network.
+
+Model comparisons characterize the configurations that were actually evaluated. They do not prove that the selected topology is the unique physical representation of a catchment.
+
+## Reproducibility
+
+Record the exact package version, random seeds, forcing and observation partitions, objective functions, model constructors, and selected checkpoints. An independent evaluation period should remain separate from structural and hyperparameter selection.

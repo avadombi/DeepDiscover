@@ -1,0 +1,70 @@
+body { background: var(--dd-outside); color: var(--dd-text); }
+.wy-nav-side { background: var(--dd-sidebar); }
+.wy-side-nav-search { background: var(--dd-sidebar-header) !important; }
+.wy-side-nav-search > a { display: block; padding: 0; }
+.wy-side-nav-search > a.icon-home::before { display: none; }
+.wy-side-nav-search img.logo {
+  display: block; width: 245px; max-width: 92%; height: auto;
+  max-height: 110px; margin: 0 auto .7rem;
+  background: transparent;
+}
+.wy-side-nav-search input[type=text] { border-radius: 18px; font-size: .87rem; }
+.wy-menu-vertical a { color: var(--dd-sidebar-text); font-size: .945rem; font-weight: 400; }
+.wy-menu-vertical a:hover { color: white; background: rgba(255,255,255,.08); }
+.wy-menu-vertical p.caption { color: var(--dd-nav-section); font-size: .80rem; font-weight: 700; letter-spacing: .035em; }
+.wy-menu-vertical li.current > a, .wy-menu-vertical li.current a {
+  background: var(--dd-sidebar-active); color: var(--dd-sidebar-active-text); border-color: var(--dd-border);
+}
+.wy-menu-vertical li.current > a.current { font-weight: 600; }
+.wy-nav-content-wrap { background: var(--dd-outside); }
+.wy-nav-content { background: var(--dd-page); max-width: 1050px; min-height: 100vh; padding: 2.1rem 3.25rem 3.8rem; }
+.rst-content, .rst-content p, .rst-content li { font-size: 16px; line-height: 1.72; }
+.rst-content h1, .rst-content h2, .rst-content h3, .rst-content h4, .rst-content h5 {
+  color: var(--dd-heading); font-family: 'Roboto Slab', Georgia, serif;
+  font-weight: 650; letter-spacing: -.013em;
+}
+.rst-content h1 { font-size: 1.93rem; line-height: 1.28; margin: .2rem 0 1.25rem; }
+.rst-content h2 { font-size: 1.45rem; line-height: 1.33; margin: 2rem 0 .85rem; }
+.rst-content h3 { font-size: 1.17rem; line-height: 1.38; margin: 1.6rem 0 .65rem; }
+.rst-content a, .wy-breadcrumbs a { color: var(--dd-link); }
+.rst-content a:hover { color: var(--dd-accent); }
+.rst-content code.literal, .rst-content tt.literal { background: var(--dd-code-background); color: var(--dd-heading); border: none; }
+.rst-content div.highlight pre { font-size: 13.5px; line-height: 1.55; background: var(--dd-code-background); border: 1px solid var(--dd-border); border-radius: 2px; }
+.rst-content .highlight { background: var(--dd-code-background); }
+.rst-content .admonition { box-shadow: none; border: 1px solid var(--dd-border); background: #fafafa; }
+.rst-content .admonition .admonition-title { background: #f1f1f4; color: var(--dd-heading); }
+.wy-breadcrumbs { font-size: 13px; }
+.wy-nav-top { background: var(--dd-sidebar); }
+.rst-content div.math, .rst-content div.math-wrapper div.math { position: relative; padding: .50rem 3rem .50rem 1.2rem; overflow: visible !important; }
+.rst-content div.math span.eqno, .rst-content div.math .eqno {
+  position: absolute !important; right: .3rem; top: 50%; transform: translateY(-50%);
+  margin: 0 !important; float: none !important; font: .92rem Georgia, serif; white-space: nowrap;
+}
+.rst-content div.math mjx-container[display='true'] { margin: .45em 0 !important; overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.dd-subtitle { color: var(--dd-subtitle); font-size: .98rem; font-weight: 400; margin: .15rem 0 1.4rem; }
+.dd-lede { font-size: 16px !important; max-width: 77ch; line-height: 1.74 !important; }
+.rst-content .dd-science-figure { margin: 1.8rem auto 2.1rem; text-align: center; }
+/* SVG dimensions are limited on the page while retaining their aspect ratio. */
+.rst-content .dd-science-figure img {
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: var(--dd-figure-max-height);
+  object-fit: contain;
+  margin: 0 auto;
+}
+/* Each picture has its own width setting in theme-colors.css. */
+.rst-content .dd-science-figure img[src*="Fig1.svg"] { max-width: min(100%, var(--dd-fig1-width)) !important; }
+.rst-content .dd-science-figure img[src*="Fig2.svg"] { max-width: min(100%, var(--dd-fig2-width)) !important; }
+.rst-content .dd-science-figure img[src*="Fig3.svg"] { max-width: min(100%, var(--dd-fig3-width)) !important; }
+.rst-content .dd-science-figure img[src*="Fig4.svg"] { max-width: min(100%, var(--dd-fig4-width)) !important; }
+.rst-content .dd-science-figure img[src*="Fig5.svg"] { max-width: min(100%, var(--dd-fig5-width)) !important; }
+
+.rst-content .dd-science-figure .caption, .rst-content .dd-science-figure figcaption { color: var(--dd-text); text-align: left; line-height: 1.55; font-size: .9rem; margin-top: .7rem; }
+@media screen and (max-width:768px) {
+  .wy-nav-content { padding: 1.6rem 1.2rem 2rem; }
+  .rst-content h1 { font-size: 1.69rem; }
+  .rst-content h2 { font-size: 1.32rem; }
+  .rst-content div.math { padding-right: 2.5rem; padding-left: .2rem; }
+}

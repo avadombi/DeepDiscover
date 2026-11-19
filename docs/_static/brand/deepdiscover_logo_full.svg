@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 145" width="560" height="145" role="img" aria-label="DeepDiscover colored logo">
+<defs><linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="90%"><stop stop-color="#0f8cdd"/><stop offset="100%" stop-color="#0670c7"/></linearGradient><linearGradient id="purple" x1="0%" y1="0%" x2="90%" y2="100%"><stop stop-color="#8248c8"/><stop offset="100%" stop-color="#6d3db9"/></linearGradient></defs>
+<g transform="translate(5,0)">
+ <path d="M18 15 H67 C104 15 125 37 130 66 C137 101 112 128 76 130 C103 119 118 101 118 76 C118 48 101 33 70 33 H18Z" fill="url(#blue)"/>
+ <path d="M18 41 H37 V82 L18 101Z" fill="url(#purple)"/>
+ <path d="M24 125 L48 102 H73 C92 102 103 93 110 74 C104 107 85 125 55 125Z" fill="url(#purple)"/>
+ <path d="M20 110 L57 80 L89 69 L111 43" stroke="#292D34" stroke-width="5" stroke-linecap="round" fill="none"/>
+ <circle cx="20" cy="110" r="11" fill="#292D34"/><circle cx="57" cy="80" r="10" fill="url(#blue)"/><circle cx="89" cy="69" r="10" fill="url(#purple)"/><circle cx="111" cy="43" r="11" fill="#e83c92"/>
+</g>
+<text x="153" y="84" fill="#292D34" font-size="61" font-family="Lato, Arial, sans-serif" font-weight="750" letter-spacing="-2">Deep</text><text x="303" y="84" fill="url(#blue)" font-size="61" font-family="Lato, Arial, sans-serif" font-weight="750" letter-spacing="-2">Discover</text>
+</svg>

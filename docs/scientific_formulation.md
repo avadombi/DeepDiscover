@@ -1,80 +1,127 @@
 # Scientific formulation
 
-## Storage, sources and losses
+This page describes the water-quantity accounting implemented by the DeepDiscover framework. It focuses on model construction and interpretation. For the published methodological basis, see [Adombi (2026)](https://doi.org/10.1016/j.jhydrol.2026.135249).
 
-For each DiscoverUnit $i$, let $S_i(t-1)$ denote the storage at the end of the previous time step and $I_i(t)$ the incoming water. The water available before boundary losses is
+## A network of DiscoverUnits
 
-$$
-A_i(t)=S_i(t-1)+I_i(t).
-$$
+Physical variables are set in upright letters. Indices such as $i$ and $j$, and the time index $t$, are italic. Storage uses a lowercase upright **s**. Time is denoted by a parenthesized superscript, for example $\mathrm{s}_i^{(t)}$ for the storage at step $t$ and $\mathrm{s}_i^{(t-1)}$ for the preceding step. Subscripts identify DiscoverUnits and candidate processes.
 
-Prescribed and user-defined sources add water to $I_i(t)$. The `sources` reported by DeepDiscover are additional boundary sources supplied inside a DU. Water entering through the main `water` tensor appears separately.
+Each DiscoverUnit (DU) represents a conceptual water storage connected to possible release processes. The connections form a directed acyclic network. Each process is assigned one destination: another DU or the system outlet.
 
-A physical sink requests a non-negative loss. A demand-limited sink uses a non-negative demand $D(t)$ and an efficiency $\eta(t)$ between zero and one:
+Let $\mathrm{s}_i^{(t-1)}$ denote the water retained by DU $i$ at the end of the previous step, and $\mathrm{I}_i^{(t)}$ the water arriving during the current step. The amount available before external losses is
 
-$$
-L_{\mathrm{request}}(t)=\eta(t)\min(D(t),A_i(t)).
-$$
+```{math}
+:label: scientific-formulation-1
 
-If the combined requested losses exceed the available water, each request is scaled by the same factor, $\min\left(1, A_i / \sum_k L_{ik,\mathrm{request}}\right)$. After the realized losses,
+\mathrm{A}_i^{(t)}=\mathrm{s}_i^{(t-1)}+\mathrm{I}_i^{(t)}.
+```
 
-$$
-B_i(t)=A_i(t)-\sum_{k}L_{ik}(t).
-$$
+The incoming water may include external input and transfers from other DUs. Units must be consistent throughout the model. For catchment-average simulations, water is commonly expressed as an equivalent depth.
 
-## CRC processes and conservative allocation
+## Boundary losses
 
-Each process $j$ has a non-negative propensity $h_{ij}(t)$ determined by a learned constitutive relationship. In `CRCNet`, each context variable has a CRC orientation $\gamma\in\{-1,0,+1\}$. Non-negative network weights and monotone activations enforce the specified direct orientation. Non-negative input variables are scaled using $x/(x+x_{\mathrm{ref}})$.
+A physical sink requests a non-negative loss $\mathrm{L}_{i,\mathrm{request}}^{(t)}$ from the water available at a DU. One demand-limited example is
 
-$$
-u_{ij}(t)=B_i(t)\frac{h_{ij}(t)}{1+\sum_kh_{ik}(t)},
-\qquad
-S_{i,\mathrm{raw}}(t)=\frac{B_i(t)}{1+\sum_kh_{ik}(t)}.
-$$
+```{math}
+:label: scientific-formulation-2
 
-For a finite capacity $S_{\max,i}$, excess retained water becomes overflow:
+\mathrm{L}_{i,\mathrm{request}}^{(t)}=\eta_i^{(t)}\min\left[\mathrm{D}_i^{(t)},\mathrm{A}_i^{(t)}\right],
+\qquad 0\le\eta_i^{(t)}\le1.
+```
 
-$$
-S_i(t)=\min(S_{i,\mathrm{raw}}(t),S_{\max,i}),\qquad
-O_i(t)=\max(S_{i,\mathrm{raw}}(t)-S_{\max,i},0).
-$$
+Here $\mathrm{D}_i^{(t)}$ is an external demand, and the coefficient $\eta_i^{(t)}$ may depend on hydrological conditions. When several losses compete for the same limited resource, the total demand is capped by available water. Let $\mathrm{L}_i^{(t)}$ denote the resulting total realized physical loss. The water remaining for release and storage is
+
+```{math}
+:label: scientific-formulation-3
+
+\mathrm{B}_i^{(t)}=\mathrm{A}_i^{(t)}-\mathrm{L}_i^{(t)},\qquad \mathrm{B}_i^{(t)}\ge0.
+```
+
+The loss $\mathrm{L}_i$ is a physical flux. A training objective called a *loss function* is a separate numerical quantity.
+
+## Neural constitutive relationships
+
+For a DU with $\mathrm{n}_i$ candidate release processes, process $j$ has a non-negative propensity
+
+```{math}
+:label: scientific-formulation-4
+
+\mathrm{h}_{ij}^{(t)}=\mathcal{N}_{ij}\left(\mathbf{c}_{ij}^{(t)};\boldsymbol{\theta}_{ij}\right)\ge0.
+```
+
+The context $\mathbf{c}_{ij}^{(t)}$ may contain chosen meteorological variables, antecedent storage, and selected upstream transfers. The trainable parameters $\boldsymbol{\theta}_{ij}$ determine the response within the imposed architecture and Causal Relationship Constraints.
+
+## Conservative allocation
+
+The physical release of process $j$ is
+
+```{math}
+:label: scientific-formulation-5
+
+\mathrm{u}_{ij}^{(t)}=\mathrm{B}_i^{(t)}\frac{\mathrm{h}_{ij}^{(t)}}{1+\sum_{k=1}^{\mathrm{n}_i}\mathrm{h}_{ik}^{(t)}}.
+```
+
+Water retained before applying a finite storage capacity is
+
+```{math}
+:label: scientific-formulation-6
+
+\mathrm{s}_{i,\mathrm{raw}}^{(t)}=\frac{\mathrm{B}_i^{(t)}}{1+\sum_{k=1}^{\mathrm{n}_i}\mathrm{h}_{ik}^{(t)}}.
+```
 
 Consequently,
 
-$$
-A_i(t)=S_i(t)+\sum_j u_{ij}(t)+O_i(t)+\sum_k L_{ik}(t).
-$$
+```{math}
+:label: scientific-formulation-7
 
-Every process has exactly **one destination**. Destinations refer to another DU or the outlet. The DU list is topologically ordered; all internal routes must point to a DU with a larger index.
+\mathrm{s}_{i,\mathrm{raw}}^{(t)}+\sum_{j=1}^{\mathrm{n}_i}\mathrm{u}_{ij}^{(t)}=\mathrm{B}_i^{(t)}.
+```
 
-## Temporal routing
+This identity follows directly from the allocation rule. It does not depend on the fitted values of the network weights.
 
-For a route $e$, water released at time $s$ is distributed across lags $\tau=0,\ldots,L_e$ using a routing kernel $g_{e,s}(\tau)$ such that
+## Storage capacity and overflow
 
-$$
- g_{e,s}(\tau)\geq 0,\qquad
- \sum_{\tau=0}^{L_e} g_{e,s}(\tau)=1.
-$$
+If a capacity $\mathrm{s}_{i,\max}$ is provided, the retained water becomes
 
-Each released quantity retains the routing weights calculated at its release time. Water awaiting arrival remains in the transit state. See [Temporal routing](routing.md).
+```{math}
+:label: scientific-formulation-8
 
-## Overall balance
+\mathrm{s}_i^{(t)}=\min\left(\mathrm{s}_{i,\mathrm{raw}}^{(t)},\mathrm{s}_{i,\max}\right),
+```
 
-The complete balance accounts for water stored in the DUs, water in transit and, when enabled, snow storage:
+and excess water is released through an explicit overflow path:
 
-$$
-\Delta(S_{\mathrm{total}}+R_{\mathrm{total}}+S_{\mathrm{snow}})
- = I_{\mathrm{external}}+I_{\mathrm{sources}}-Q_{\mathrm{outlet}}-L_{\mathrm{boundaries}}+\epsilon.
-$$
+```{math}
+:label: scientific-formulation-9
 
-Numerical conservation and hydrological plausibility are separate evaluations. Persistent storage accumulation may remain physically implausible even when the arithmetic balance closes.
+\mathrm{o}_i^{(t)}=\max\left(\mathrm{s}_{i,\mathrm{raw}}^{(t)}-\mathrm{s}_{i,\max},0\right).
+```
 
-## Informational memory
+The local balance is then
 
-The optional informational memory $m(t)$ evolves independently of water storage:
+```{math}
+:label: scientific-formulation-10
 
-$$
-m(t)=[1-\lambda(t)]m(t-1)+\lambda(t)z(t).
-$$
+\mathrm{s}_i^{(t)}+\sum_{j=1}^{\mathrm{n}_i}\mathrm{u}_{ij}^{(t)}+\mathrm{o}_i^{(t)}+\mathrm{L}_i^{(t)}=\mathrm{A}_i^{(t)}.
+```
 
-The memory state carries information and does not transport water. All water transferred between DiscoverUnits is accounted for through the conservative routing kernels.
+An unbounded DU has no capacity-related overflow. For a learned capacity, its prescribed bounds delimit the admissible value.
+
+## Process destinations and temporal routing
+
+Each release enters a declared route. For a prescribed kernel $\mathrm{g}_e(\tau)$ with non-negative weights summing to one, the arrival at the destination may be written as
+
+```{math}
+:label: scientific-formulation-11
+
+\mathrm{F}_e^{(t)}=\sum_{\tau=0}^{\mathrm{L}_e}\mathrm{g}_e(\tau)\mathrm{x}_e^{(t-\tau)},
+\qquad \mathrm{g}_e(\tau)\ge0,\quad \sum_{\tau=0}^{\mathrm{L}_e}\mathrm{g}_e(\tau)=1,
+```
+
+where $\mathrm{x}_e^{(t)}$ is the release entering route $e$. The water still in transit is explicitly accounted for. An instantaneous route uses a single unit weight at zero delay.
+
+## Global balance and observation
+
+The change in total modelled water storage, including the water held inside routing pathways and any configured upstream snow storage, is balanced by incoming water, physical losses, and water arriving at the system outlet. Internal transfers cancel when the complete network is considered.
+
+Observed discharge, groundwater level, and other measured variables are connected to the simulated state through observation operators. These operators affect the quantities compared in calibration, without changing the water-conservation identities above.
