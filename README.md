@@ -1,5 +1,7 @@
 # DeepDiscover
 
+**Documentation:** https://avadombi.github.io/DeepDiscover/
+
 DeepDiscover is an open-source Python library for hydrological model discovery. It learns constitutive relationships for water release processes within a differentiable, mass-conserving framework. Models comprise one or more DiscoverUnits (DUs), each with a water storage and candidate processes. Each process has one declared destination, with temporal routing configured separately.
 
 The same hydrological system can be calibrated against streamflow, groundwater levels, soil moisture and other measured variables using observation operators. Multiple observation types can be used together.
@@ -116,26 +118,21 @@ python verify_camels.py
 
 This command requires the CAMELS-US files and the `checkpoint/` and `history.json` created by the full example.
 
+
 ## Documentation
 
-The `docs/` directory covers the [scientific equations](https://github.com/avadombi/DeepDiscover/blob/main/docs/scientific_formulation.md), [model configuration](https://github.com/avadombi/DeepDiscover/blob/main/docs/model_configuration.md), [topologies](https://github.com/avadombi/DeepDiscover/blob/main/docs/topologies.md), [data](https://github.com/avadombi/DeepDiscover/blob/main/docs/data.md), [routing](https://github.com/avadombi/DeepDiscover/blob/main/docs/routing.md), [observation operators](https://github.com/avadombi/DeepDiscover/blob/main/docs/observations.md), [custom components](https://github.com/avadombi/DeepDiscover/blob/main/docs/customization.md), [calibration](https://github.com/avadombi/DeepDiscover/blob/main/docs/training_and_evaluation.md) and [model comparison](https://github.com/avadombi/DeepDiscover/blob/main/docs/structural_comparison.md).
+The complete documentation is available at [DeepDiscover Documentation](https://avadombi.github.io/DeepDiscover/).
+
+It covers model construction, scientific formulation, calibration, routing, observation operators, application tutorials, and the Python API.
 
 To build the documentation locally:
 
 ```bash
-python -m pip install ".[docs]"
-mkdocs build
+python -m pip install -r docs/requirements.txt
+python tools/generate_api.py
+python -m sphinx -b html docs ../DeepDiscover_docs_build
 ```
 
-## Tests
-
-```bash
-python -m pip install ".[test]"
-python check.py
-python -m pytest -q
-```
-
-The tests cover conservation, routing, gradients, observation operators, training, model saving, temporal windows and CAMELS data preparation.
 
 ## Reporting bugs
 
