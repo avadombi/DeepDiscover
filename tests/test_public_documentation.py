@@ -40,3 +40,20 @@ def test_public_instructions_are_current():
     assert "## Conservative allocation" in scientific
     assert "## Global balance and observation" in scientific
     assert r"\mathrm{s}_i^{(t)}" in scientific
+
+
+def test_version_metadata_matches_package():
+    import tomllib
+
+    metadata = tomllib.loads(
+        (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    )
+    module = (
+        ROOT / "src/deepdiscover/__init__.py"
+    ).read_text(encoding="utf-8")
+    citation = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
+
+    version = metadata["project"]["version"]
+
+    assert f'__version__ = "{version}"' in module
+    assert f'version: "{version}"' in citation
